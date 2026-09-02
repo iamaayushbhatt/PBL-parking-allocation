@@ -1,2 +1,3 @@
-# PBL-parking-allocation
-The goal of this project is to make an efficient parking space and simulate how oncoming vehicles would navigate in a parking space in order to find a vacant spot that is nearest to them. 
+The initial goal of this project is to make a more efficient parking space, and simulating how vehicles would navigate through a filled multi-lane parking space to find the nearest spot without wasting any time by roaming aimlessly to find an open spot that has appropriate space for their vehicle. The project would help reduce time taken by people to navigate to an empty parking spot and also reduce the carbon emissions caused by reducing the fuel exhausted in traveling to an empty parking spot.
+
+The project would be able to show how different layout of parking model would work for different random vehicles, and would give generate a a parking ticket or fee for parking based on the type of vehicle that is parked(based on space required my the vehicle/EV charging support required etc.) and display it and store it for the admin of the parking lot.
