@@ -35,6 +35,11 @@ public:
     void updateLaneOccupancy(int u, int v, int delta);
     void setLaneClosed(int u, int v, bool isClosed);
     int getWeight(int u, int v);
+
+
+    // base (physical) length: ignores traffic and closures
+    int getDistance(int u, int v);             // INT_MAX if no such lane
+    int pathDistance(const vector<int> &path); // 0 if fewer than 2 nodes
 };
 
 #endif

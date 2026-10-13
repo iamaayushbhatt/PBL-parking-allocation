@@ -37,6 +37,20 @@ int main()
     g.addEdge(2, 0, 4);                // old 3-argument call
     assert(g.getWeight(2, 0) == 4);
 
+
+    // base distance ignores traffic and closures
+    assert(g.getDistance(0, 1) == 10);
+    assert(g.getDistance(1, 0) == INT_MAX);        // no such lane
+    g.updateLaneOccupancy(0, 1, 5);                // lane 0->1 now full
+    g.setLaneClosed(0, 1, true);
+    assert(g.getDistance(0, 1) == 10);             // still 10
+    g.setLaneClosed(0, 1, false);
+    g.updateLaneOccupancy(0, 1, -5);
+    assert(g.pathDistance({0, 1, 2}) == 20);
+    assert(g.pathDistance({0, 1, 2, 0}) == 24);
+    assert(g.pathDistance({}) == 0);               // no route found
+    assert(g.pathDistance({1}) == 0);
+    assert(g.pathDistance({0, 2}) == INT_MAX);     // lane missing
     std::cout << "All graph tests passed\n";
     return 0;
 }
