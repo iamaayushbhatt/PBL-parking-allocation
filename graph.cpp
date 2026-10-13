@@ -76,3 +76,24 @@ int Graph::getWeight(int u, int v)
         return INT_MAX;
     return weightOf(*e);
 }
+
+int Graph::getDistance(int u, int v)
+{
+    Edge *e = findEdge(u, v);
+    if (e == nullptr)
+        return INT_MAX;
+    return e->distance;
+}
+
+int Graph::pathDistance(const vector<int> &path)
+{
+    int total = 0;
+    for (size_t i = 0; i + 1 < path.size(); i++)
+    {
+        int d = getDistance(path[i], path[i + 1]);
+        if (d == INT_MAX)
+            return INT_MAX;
+        total += d;
+    }
+    return total;
+}
