@@ -1,0 +1,28 @@
+{
+  "name": "Sample 3-aisle layout",
+  "nodes": [
+    { "id": 0, "x": 0, "y": 0 },
+    { "id": 1, "x": 5, "y": 0 },
+    { "id": 2, "x": 10, "y": 0 },
+    { "id": 3, "x": 5, "y": 5 },
+    { "id": 4, "x": 10, "y": 5 },
+    { "id": 5, "x": 15, "y": 0 }
+  ],
+  "lanes": [
+    { "from": 0, "to": 1, "distance": 5, "capacity": 10, "twoWay": true },
+    { "from": 1, "to": 2, "distance": 5, "capacity": 10, "twoWay": true },
+    { "from": 1, "to": 3, "distance": 5, "capacity": 6, "twoWay": true },
+    { "from": 2, "to": 4, "distance": 5, "capacity": 6, "twoWay": true },
+    { "from": 3, "to": 4, "distance": 5, "capacity": 6, "twoWay": true },
+    { "from": 2, "to": 5, "distance": 5, "capacity": 10, "twoWay": true }
+  ],
+  "slots": [
+    { "id": 1, "node": 3, "floor": 0, "size": "COMPACT" },
+    { "id": 2, "node": 3, "floor": 0, "size": "STANDARD" },
+    { "id": 3, "node": 4, "floor": 0, "size": "LARGE" },
+    { "id": 4, "node": 4, "floor": 0, "size": "STANDARD", "ev": true },
+    { "id": 5, "node": 2, "floor": 0, "size": "STANDARD", "accessible": true }
+  ],
+  "entries": [0],
+  "exits": [5]
+}
