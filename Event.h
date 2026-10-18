@@ -1,11 +1,12 @@
 #pragma once
+#include <string>
 
-enum EventType { VEHICLE_ARRIVAL, VEHICLE_EXIT, LANE_BLOCKED, LANE_OPENED };
+enum EventType { VEHICLE_ARRIVAL, VEHICLE_PARKED, VEHICLE_EXIT, LANE_BLOCKED, LANE_OPENED };
 
 struct Event {
     double timestamp;
     EventType type;
-    int vehicleId = -1;
+    std::string vehicleId;   // empty for events that are not about a vehicle
     int targetSlotId = -1;
     int laneId = -1;
     long long seq = 0;   // set by the queue, not by the caller
