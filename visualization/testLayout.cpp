@@ -5,7 +5,7 @@
 #include <string>
 
 #include "JsonParser.h"
-#include "layout_loader.h"
+#include "layoutLoader.h"
 
 // true if loading this text throws an error
 static bool fails(const std::string &text)
