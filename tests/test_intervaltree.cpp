@@ -1,5 +1,7 @@
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
+#include <vector>
 #include "intervaltree.h"
 
 int main()
@@ -38,6 +40,55 @@ int main()
     assert(t.tryReserve(20, 40));          // fills the gap exactly
     assert(t.size() == 3);
     assert(!t.tryReserve(0, 100));
+
+    // --- balancing: bookings that arrive in sorted order must not make a line ---
+    {
+        IntervalTree sorted;
+        for (int i = 0; i < 1000; i++)
+            assert(sorted.tryReserve(i * 10, i * 10 + 10)); // back-to-back windows
+        assert(sorted.size() == 1000);
+        assert(sorted.height() <= 14); // an unbalanced tree would be 1000 levels tall
+
+        assert(sorted.queryOverlap(4995, 5005)); // finds a window in the middle
+        assert(!sorted.tryReserve(2500, 2501));  // already booked
+        assert(sorted.remove(2500, 2510));
+        assert(sorted.tryReserve(2500, 2510));   // window is free again
+        assert(sorted.height() <= 14);
+    }
+
+    // --- random test: compare with a simple list of booked windows ---
+    {
+        IntervalTree tree;
+        std::vector<std::pair<int, int>> booked;
+        srand(12345);
+        for (int step = 0; step < 5000; step++)
+        {
+            int low = rand() % 1000;
+            int high = low + 1 + rand() % 50;
+
+            bool clash = false;
+            for (const auto &b : booked)
+                if (b.first < high && low < b.second)
+                    clash = true;
+
+            assert(tree.queryOverlap(low, high) == clash);
+
+            if (rand() % 3 != 0)
+            {
+                assert(tree.tryReserve(low, high) == !clash);
+                if (!clash)
+                    booked.push_back({low, high});
+            }
+            else if (!booked.empty())
+            {
+                int k = rand() % booked.size();
+                assert(tree.remove(booked[k].first, booked[k].second));
+                booked.erase(booked.begin() + k);
+            }
+            assert(tree.size() == (int)booked.size());
+        }
+        assert(tree.height() <= 20);
+    }
 
     std::cout << "All interval tree tests passed\n";
     return 0;
