@@ -77,6 +77,24 @@ int Graph::getWeight(int u, int v)
     return weightOf(*e);
 }
 
+bool Graph::isClosed(int u, int v)
+{
+    Edge *e = findEdge(u, v);
+    return e != nullptr && e->closed;
+}
+
+int Graph::getCapacity(int u, int v)
+{
+    Edge *e = findEdge(u, v);
+    return e == nullptr ? 0 : e->capacity;
+}
+
+int Graph::getVehicleCount(int u, int v)
+{
+    Edge *e = findEdge(u, v);
+    return e == nullptr ? 0 : e->vehicleCount;
+}
+
 int Graph::getDistance(int u, int v)
 {
     Edge *e = findEdge(u, v);
