@@ -51,6 +51,19 @@ int main()
     assert(g.pathDistance({}) == 0);               // no route found
     assert(g.pathDistance({1}) == 0);
     assert(g.pathDistance({0, 2}) == INT_MAX);     // lane missing
+
+    // read-only lane state
+    assert(!g.isClosed(0, 1));
+    g.setLaneClosed(0, 1, true);
+    assert(g.isClosed(0, 1));
+    g.setLaneClosed(0, 1, false);
+    assert(g.getCapacity(0, 1) == 5);              // capacity given in addEdge
+    assert(g.getCapacity(2, 0) == 10);             // default capacity
+    assert(g.getVehicleCount(0, 1) == 0);
+    g.updateLaneOccupancy(0, 1, 3);
+    assert(g.getVehicleCount(0, 1) == 3);
+    g.updateLaneOccupancy(0, 1, -3);
+    assert(!g.isClosed(1, 0) && g.getCapacity(1, 0) == 0 && g.getVehicleCount(1, 0) == 0);  // no such lane
     std::cout << "All graph tests passed\n";
     return 0;
 }

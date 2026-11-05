@@ -36,6 +36,11 @@ public:
     void setLaneClosed(int u, int v, bool isClosed);
     int getWeight(int u, int v);
 
+    // read-only lane state (used by the visualiser); a missing lane gives false / 0
+    bool isClosed(int u, int v);
+    int getCapacity(int u, int v);
+    int getVehicleCount(int u, int v);
+
 
     // base (physical) length: ignores traffic and closures
     int getDistance(int u, int v);             // INT_MAX if no such lane
