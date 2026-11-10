@@ -117,6 +117,7 @@ void Simulation::run()
             cout << line << "\n";
     }
     report();
+    admin.exportTicketsToCSV("tickets.csv");
 }
 
 void Simulation::processNext()
