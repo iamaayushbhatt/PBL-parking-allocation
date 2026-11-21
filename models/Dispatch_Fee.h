@@ -15,5 +15,5 @@ public:
 
 class FeeCalculator {
 public:
-    ParkingTicket generateTicket(string ticketId, Vehicle* v, ParkingSlot* slot, int departureTime);
+    static ParkingTicket generateTicket(string ticketId, Vehicle* v, ParkingSlot* slot, int departureTime);
 };
