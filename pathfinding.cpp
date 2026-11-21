@@ -9,74 +9,70 @@
 
 using namespace std;
 
-
-// DIJKSTRA ALGORITHM
+// DIJKSTRA ALGORITHM - ARRAY BASED
 vector<int> Pathfinding::dijkstra(
     Graph &graph,
     int start,
     int destination)
 {
     int n = graph.getVertices();
+    const int INF = numeric_limits<int>::max();
 
-    vector<int> distance(
-        n,
-        numeric_limits<int>::max());
+    if (start < 0 || start >= n ||
+        destination < 0 || destination >= n)
+        return {};
 
+    vector<int> dis(n, INF);
+    vector<int> visited(n, 0);
     vector<int> parent(n, -1);
 
-    priority_queue<
-        pair<int, int>,
-        vector<pair<int, int>>,
-        greater<pair<int, int>>>
-        pq;
+    dis[start] = 0;
 
-    distance[start] = 0;
-
-    pq.push({0, start});
-
-    while (!pq.empty())
+    for (int i = 0; i < n; i++)
     {
-        int currentDistance = pq.top().first;
-        int current = pq.top().second;
+        // extractMin() logic
+        int minimum = INF;
+        int u = -1;
 
-        pq.pop();
+        for (int j = 0; j < n; j++)
+        {
+            if (visited[j] == 0 && dis[j] < minimum)
+            {
+                minimum = dis[j];
+                u = j;
+            }
+        }
 
-        // Ignore old information in priority queue
-        if (currentDistance > distance[current])
-            continue;
-
-        // Destination reached
-        if (current == destination)
+        if (u == -1)
             break;
 
-        // Check all neighboring nodes
-        for (auto edge : graph.getNeighbors(current))
+        visited[u] = 1;
+
+        if (u == destination)
+            break;
+
+        // Relax neighboring nodes
+        for (auto edge : graph.getNeighbors(u))
         {
-            int next = edge.first;
+            int v = edge.first;
             int weight = edge.second;
 
-            int newDistance =
-                currentDistance + weight;
-
-            if (newDistance < distance[next])
+            if (visited[v] == 0 &&
+                weight >= 0 &&
+                dis[u] <= INF - weight &&
+                dis[u] + weight < dis[v])
             {
-                distance[next] = newDistance;
-                parent[next] = current;
-
-                pq.push({newDistance,
-                         next});
+                dis[v] = dis[u] + weight;
+                parent[v] = u;
             }
         }
     }
 
-    // No route found
-    if (distance[destination] ==
-        numeric_limits<int>::max())
-    {
+    // Destination unreachable
+    if (dis[destination] == INF)
         return {};
-    }
 
-    // Reconstruct path
+    // Reconstruct shortest path
     vector<int> path;
 
     int current = destination;
@@ -91,7 +87,6 @@ vector<int> Pathfinding::dijkstra(
 
     return path;
 }
-
 
 // HEURISTIC FOR A*
 int Pathfinding::heuristic(
