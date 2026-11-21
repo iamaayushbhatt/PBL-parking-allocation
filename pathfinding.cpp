@@ -215,6 +215,12 @@ int Pathfinding::calculateDistance(
     Graph &graph,
     vector<int> path)
 {
+    // Handle empty and single-node paths
+    if (path.size() < 2)
+    {
+        return 0;
+    }
+
     int totalDistance = 0;
 
     for (int i = 0;
