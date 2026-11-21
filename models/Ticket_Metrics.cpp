@@ -1,3 +1,4 @@
+#include <fstream>
 #include "Ticket_Metrics.h"
 #include <iostream>
 #include <iomanip>
@@ -9,6 +10,35 @@ ParkingTicket::ParkingTicket(string tId, string vId, string plate, int sId, int 
       floorNumber(floor), arrivalTime(arr), departureTime(dep), totalFee(fee) {}
 
 string ParkingTicket::getTicketId() const { return ticketId; }
+string ParkingTicket::getVehicleId() const
+{
+    return vehicleId;
+}
+
+string ParkingTicket::getLicensePlate() const
+{
+    return licensePlate;
+}
+
+int ParkingTicket::getSlotId() const
+{
+    return slotId;
+}
+
+int ParkingTicket::getFloorNumber() const
+{
+    return floorNumber;
+}
+
+int ParkingTicket::getArrivalTime() const
+{
+    return arrivalTime;
+}
+
+int ParkingTicket::getDepartureTime() const
+{
+    return departureTime;
+}
 double ParkingTicket::getFee() const { return totalFee; }
 
 void ParkingTicket::printTicket() const {
@@ -55,4 +85,42 @@ void AdminMetricsManager::displayAdminDashboard(const vector<ParkingSlot*>& slot
     cout << " Total Tickets Processed: " << ticketHistory.size() << "\n";
     cout << " Current Occupancy Rate : " << calculateOccupancyRate(slots) << "%\n";
     cout << "=========================================================\n";
+}
+
+bool AdminMetricsManager::exportTicketsToCSV(const string &filename) const
+{
+
+    ofstream file(filename);
+
+    if (!file.is_open())
+    {
+        cout << "Unable to open CSV file!\n";
+        return false;
+    }
+
+    file << "TicketID,VehicleID,LicensePlate,SlotID,Floor,"
+         << "ArrivalTime,DepartureTime,Duration,TotalFee\n";
+
+    for (const ParkingTicket &ticket : ticketHistory)
+    {
+
+        int duration = ticket.getDepartureTime() -
+                       ticket.getArrivalTime();
+
+        file << ticket.getTicketId() << ","
+             << ticket.getVehicleId() << ","
+             << ticket.getLicensePlate() << ","
+             << ticket.getSlotId() << ","
+             << ticket.getFloorNumber() << ","
+             << ticket.getArrivalTime() << ","
+             << ticket.getDepartureTime() << ","
+             << duration << ","
+             << fixed << setprecision(2) << ticket.getFee()
+             << "\n";
+    }
+
+    file.close();
+
+    cout << "Tickets exported successfully!\n";
+    return true;
 }

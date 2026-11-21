@@ -21,6 +21,12 @@ public:
     ParkingTicket(string tId, string vId, string plate, int sId, int floor, int arr, int dep, double fee);
 
     string getTicketId() const;
+    string getVehicleId() const;
+    string getLicensePlate() const;
+    int getSlotId() const;
+    int getFloorNumber() const;
+    int getArrivalTime() const;
+    int getDepartureTime() const;
     double getFee() const;
     void printTicket() const;
 };
@@ -32,7 +38,7 @@ private:
 
 public:
     AdminMetricsManager();
-
+    bool exportTicketsToCSV(const string &filename) const;
     void recordTicket(const ParkingTicket& ticket);
     double getTotalRevenue() const;
     double calculateOccupancyRate(const vector<ParkingSlot*>& slots) const;

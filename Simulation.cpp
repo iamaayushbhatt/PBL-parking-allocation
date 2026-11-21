@@ -6,7 +6,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-
+#include "Dispatch_Fee.h"
 #include "graph.h"
 #include "pathfinding.h"
 
@@ -34,18 +34,6 @@ static const vector<DemoVehicle> DEMO_VEHICLES = {
 
 // lanes the demo closes and reopens: laneId -> {from, to} (both directions)
 static const vector<pair<int, int>> DEMO_LANES = {{1, 5}};
-
-// ------------------------------------------------- placeholder fee function
-// TODO: replace with Aman's fee calculator when it is pushed.
-static double calcFee(int minutes, const string &size, bool ev)
-{
-    double perHour = (size == "LARGE") ? 50 : (size == "COMPACT") ? 20 : 30;
-    if (ev)
-        perHour += 10; // charging surcharge
-    int hours = max(1, (int)ceil(minutes / 60.0));
-    return perHour * hours;
-}
-
 
 // ----------------------------------------------------------- construction
 Simulation::Simulation(const string &layoutPath, Mode mode, int vehicleCount, unsigned seed)
@@ -117,6 +105,7 @@ void Simulation::run()
             cout << line << "\n";
     }
     report();
+    admin.exportTicketsToCSV("tickets.csv");
 }
 
 void Simulation::processNext()
@@ -501,9 +490,11 @@ void Simulation::onExit(const Event &e)
 
     int arrivalPark = parkedAt[v.getVehicleId()];
     int minutes = (int)e.timestamp - arrivalPark;
-    double fee = calcFee(minutes, v.getSize(), v.requiresEV());
-    admin.recordTicket(ParkingTicket("T" + to_string(++tickets), v.getVehicleId(), v.getLicensePlate(),
-                                     slot->getId(), slot->getFloor(), arrivalPark, (int)e.timestamp, fee));
+ParkingTicket ticket = FeeCalculator::generateTicket(
+    "T" + to_string(++tickets),&v,slot,(int)e.timestamp
+);
+double fee = ticket.getFee();
+admin.recordTicket(ticket);
     stamp(e.timestamp);
     out << v.getVehicleId() << " leaves slot " << slot->getId() << " after " << minutes
         << " min, fee " << fixed << setprecision(2) << fee << "\n";
