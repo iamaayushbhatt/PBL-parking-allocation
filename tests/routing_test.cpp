@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cassert>
 #include "../graph.h"
 #include "../pathfinding.h"
 
@@ -127,5 +128,19 @@ int main()
         Pathfinding::aStar(
             parking, start, destination));
 
+            
+    // TEST 5: Empty path
+    cout << "\nTEST 5: Empty path\n";
+
+    assert(Pathfinding::calculateDistance(parking, {}) == 0);
+
+    cout << "Empty path test passed!\n";
+
+    // TEST 6: Single-node path
+    cout << "\nTEST 6: Single-node path\n";
+
+    assert(Pathfinding::calculateDistance(parking, {0}) == 0);
+
+    cout << "Single-node path test passed!\n";
     return 0;
 }
