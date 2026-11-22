@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
 
-enum EventType { VEHICLE_ARRIVAL, VEHICLE_PARKED, VEHICLE_EXIT, LANE_BLOCKED, LANE_OPENED };
+enum EventType { VEHICLE_ARRIVAL, VEHICLE_PARKED, VEHICLE_EXIT, LANE_BLOCKED, LANE_OPENED, VEHICLE_LEFT };
+// VEHICLE_EXIT: the vehicle leaves its slot and starts driving to the exit gate.
+// VEHICLE_LEFT: it reaches the gate and leaves the lot.
 
 struct Event {
     double timestamp;
