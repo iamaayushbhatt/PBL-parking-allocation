@@ -1,358 +1,789 @@
+
 # 🚗 Multi-Lane Parking Allocation and Rerouting Simulator
 
-**An event-driven parking simulator in C++17 featuring intelligent slot allocation, congestion-aware routing, lane closures, reservations, live terminal visualization, parking tickets, and performance metrics.**
+### An Event-Driven Smart Parking Simulation System Using C++17, Data Structures and OOP
 
+**Team:** The Canvas  
+**Team ID:** DSCPP-III-2026-T062  
+**Institution:** Graphic Era (Deemed to be University), Dehradun  
+**Academic Session:** 2026–27  
+**Course:** Project-Based Learning (Data Structures and OOP with C++)
 
-## 👥 Team Information
+---
 
-| Field | Details |
-| --- | --- |
-| **Team ID** | DSCPP-III-2026-T062 |
-| **Team Name** | The Canvas |
-| **Course** | B.Tech CSE |
-| **Mentor** | Ms. Ashwini Yeole |
+## 📌 Project Overview
 
-### Team Members
+The **Multi-Lane Parking Allocation and Rerouting Simulator** is a C++17 application that models vehicle movement, intelligent parking-slot allocation, congestion-aware routing, lane closures, reservations, and parking management.
 
-| Member | Student ID | Role | Main contribution |
-| --- | --- | --- | --- |
-| Aayush Bhatt (Team Lead) | 2510011035 | Team Lead & Integration | JSON layout loading, demo layout, `main.cpp`, integration |
-| Armaan Sachdeva | 2510012259 | Data Structures | Event queue, dynamic lane weights/closures, interval tree, metrics, tests |
-| Arihant Jain | 2510011114 | Algorithms | Dijkstra's algorithm, A* pathfinding, routing tests |
-| Aman Aithani | 25101280977 | Object-Oriented Programming | Vehicle hierarchy, parking-slot states, tickets, admin metrics, dispatch/fee-related classes |
+The project represents a parking facility as a weighted graph, where junctions are vertices and roads are edges.
+
+When a vehicle enters the facility, the simulator:
+
+1. Identifies suitable parking slots.
+2. Checks slot availability and reservation conflicts.
+3. Calculates an efficient route using graph algorithms.
+4. Guides the vehicle toward its allocated slot.
+5. Updates occupancy and traffic information.
+6. Processes the vehicle's departure.
+7. Calculates parking fees and records performance metrics.
+
+An interactive terminal-based visualizer displays the parking layout, moving vehicles, occupancy, traffic statistics, environmental estimates, revenue, and simulation events.
+
+The project is a **software simulation**, not a sensor-connected physical parking system.
+
+---
 
 ## 🎯 Problem Statement
 
-Finding a suitable parking space in a large facility can waste time, fuel, and road capacity. A simple nearest-slot search is not enough: lanes may be congested or closed, slots may be reserved, and vehicle-specific needs (size, EV charging, accessibility) must be considered.
+In large parking facilities, drivers often waste time searching for available spaces.
 
-This project **simulates the full parking journey**, from vehicle arrival and slot selection to routing, parking, departure, fee calculation, and reporting. It is a software simulation rather than a sensor-connected physical parking system.
+Common problems include:
 
-## ✨ Implemented Features
+- Difficulty locating suitable parking slots.
+- Traffic congestion within parking facilities.
+- Road or lane closures.
+- Incompatible parking spaces for specific vehicles.
+- Overlapping parking reservations.
+- Unnecessary driving distance and fuel consumption.
+- Inefficient parking utilization.
 
-- **Event-driven simulation:** vehicle arrival, vehicle parked, vehicle exit, lane blocked, and lane reopened events.
-- **Intelligent slot allocation:** selects a reachable, available slot compatible with the vehicle's size, EV requirement, accessibility requirement, and reservation window.
-- **Graph-based navigation:** models junctions and lanes with capacities, occupancy, distances, and closure states.
-- **Congestion-aware routing:** uses **A\*** to select the lowest-cost route among eligible slots; also implements **Dijkstra** for shortest-path computation and testing.
-- **Closure-aware detours:** new arrivals avoid closed lanes. The report tracks routes that differ from their all-lanes-open alternative.
-- **Interval-tree reservations:** detects overlapping time windows using half-open intervals `[start, end)`; the demo includes preconfigured bookings.
-- **Vehicle and slot OOP models:** standard, electric, and accessible vehicles; compact, standard, and large spaces; slot states `FREE`, `RESERVED`, `OCCUPIED`, and `MAINTENANCE`.
-- **Random scenarios:** seeded vehicle generation and timed lane closures for repeatable experiments.
-- **Interactive terminal visualization:** a color-capable, keyboard-controlled map with live metrics and an event log (ncurses/PDCurses build).
-- **Fees, tickets, and admin metrics:** records completed stays, calculates fees, displays total revenue, ticket count, and occupancy.
-- **CSV export in console mode:** writes completed parking tickets to `tickets.csv` after the simulation finishes.
-- **Performance and environmental estimates:** time to park, parking duration, distance-based estimated CO₂, and savings compared with a simulated baseline.
+Our simulator demonstrates how graph algorithms, data structures, and object-oriented programming can address these challenges.
 
-## 🧰 Tech Stack
+---
+
+## 🎯 Project Objectives
+
+- Model a parking facility using a weighted graph.
+- Allocate suitable parking slots automatically.
+- Implement Dijkstra's and A* pathfinding algorithms.
+- Consider congestion when calculating routes.
+- Avoid closed lanes during route selection.
+- Prevent overlapping reservations using an interval tree.
+- Manage vehicle arrivals and departures using an event queue.
+- Support multiple vehicle and parking-slot categories.
+- Display live simulation activity in a terminal interface.
+- Generate parking tickets and calculate revenue.
+- Measure occupancy, parking time, and estimated CO₂ emissions.
+
+---
+
+## 👥 Team Members and Contributions
+
+| Team Member | Role | Contributions |
+|---|---|---|
+| Aayush Bhatt | Team Lead and Integration | JSON layout loader, application integration, main program, terminal visualizer, documentation |
+| Armaan Sachdeva | Data Structures and Simulation | Event queue, AVL interval tree, simulation engine, congestion and closure handling, metrics |
+| Arihant Jain | Graph and Pathfinding | Graph implementation, Dijkstra, A*, shortest-path calculations, routing tests |
+| Aman Aithani | OOP and Parking Management | Vehicle hierarchy, slot states, ticket management, fees, dispatch-related models, admin metrics |
+
+**Project Mentor:** Ms. Ashwini Yeole
+
+---
+
+## ✨ Key Features
+
+### 1. Intelligent Parking Allocation
+
+The simulator selects parking slots according to:
+
+- Vehicle category and size.
+- Slot availability.
+- EV charging requirements.
+- Accessibility requirements.
+- Reservation conflicts.
+- Route availability and cost.
+
+If no suitable reachable slot is available, the vehicle is turned away.
+
+### 2. Graph-Based Navigation
+
+The parking facility is represented using an adjacency-list graph.
+
+Each lane stores information such as:
+
+- Destination node.
+- Lane distance.
+- Lane capacity.
+- Current vehicle occupancy.
+- Lane closure status.
+
+### 3. Dijkstra and A* Algorithms
+
+**Dijkstra's algorithm** calculates minimum-cost paths using nonnegative edge weights.
+
+**A*** uses accumulated route cost and a heuristic to guide pathfinding.
+
+The simulator uses A* in its slot-routing workflow, while Dijkstra is also implemented and tested.
+
+### 4. Congestion-Aware Routing
+
+Lane costs change according to traffic occupancy.
+
+The routing model uses a congestion-dependent weight:
+
+```text
+Weight = ceil(distance × (1 + 2 × load / capacity))
+```
+
+A congested lane receives a higher routing cost, encouraging the algorithm to consider alternative paths.
+
+### 5. Lane Closures
+
+The graph supports marking lanes as closed or reopened.
+
+Closed lanes are excluded when calculating new routes.
+
+The current implementation supports closure-aware routing for new arrivals. Continuous replanning for vehicles already traveling is a possible future enhancement.
+
+### 6. Reservation Management
+
+An AVL-balanced interval tree manages parking reservation windows.
+
+Reservations use half-open intervals:
+
+```text
+[start, end)
+```
+
+This prevents overlapping bookings for the same parking slot.
+
+### 7. Event-Driven Simulation
+
+The simulator uses a priority queue to process events in chronological order.
+
+Events include:
+
+- Vehicle arrival.
+- Vehicle parking.
+- Vehicle departure or exit.
+- Lane closure.
+- Lane reopening.
+
+### 8. Vehicle and Slot Models
+
+The project uses object-oriented programming to represent different vehicle categories and parking slots.
+
+Vehicle categories include standard, electric, and accessible vehicles.
+
+Parking slots support different sizes and special requirements.
+
+Slot states include:
+
+```text
+FREE
+RESERVED
+OCCUPIED
+MAINTENANCE
+```
+
+### 9. Interactive Terminal Visualization
+
+The live terminal interface displays:
+
+- Parking roads and junctions.
+- Entry and exit gates.
+- Available and occupied slots.
+- Moving vehicles.
+- Vehicle routes.
+- Lane congestion and closures.
+- Parking occupancy.
+- Traffic statistics.
+- Revenue and environmental metrics.
+- Time-stamped event logs.
+
+The UI is implemented using **PDCurses on Windows** and **ncurses on Linux**.
+
+### 10. Random Traffic Simulation
+
+The simulator supports seeded random traffic scenarios for repeatable experiments.
+
+### 11. Parking Tickets and Revenue
+
+The system records completed parking stays and generates ticket information.
+
+Ticket data includes:
+
+- Ticket ID.
+- Vehicle ID.
+- License plate.
+- Parking slot.
+- Floor number.
+- Arrival time.
+- Departure time.
+- Parking duration.
+- Total fee.
+
+### 12. Performance Metrics
+
+The simulator tracks:
+
+- Total arrivals.
+- Successfully parked vehicles.
+- Exited vehicles.
+- Turned-away vehicles.
+- Rerouted vehicles.
+- Occupancy percentage.
+- Average parking time.
+- Average parking duration.
+- Estimated CO₂ emitted and saved.
+- Total parking revenue.
+
+---
+
+## 🛠️ Technology Stack
 
 | Category | Technology |
-| --- | --- |
-| Language | C++17 |
-| Compiler | `g++` (C++17-capable) |
-| Core concepts | OOP, graph algorithms, priority queues, event-driven simulation, interval trees |
-| STL | `vector`, `map`, `set`, smart pointers, queues, random-number generation |
-| Layout configuration | JSON, parsed by the project's own JSON parser |
-| Optional UI library | **ncurses** (Linux/WSL) or **PDCurses** (native Windows) |
-| Output | Console reports and CSV ticket history |
-| Version control | Git and GitHub |
+|---|---|
+| Programming Language | C++17 |
+| Core Concepts | Data Structures, Algorithms, OOP |
+| Data Structures | Graph, priority queue, AVL interval tree, maps, sets |
+| Algorithms | Dijkstra, A*, congestion-aware routing |
+| Standard Library | C++ STL |
+| Terminal UI | PDCurses / ncurses |
+| Layout Input | JSON |
+| Ticket Output | CSV |
+| Compiler | GCC / G++ |
+| Development Environment | MSYS2 UCRT64, VS Code |
+| Version Control | Git and GitHub |
+| Operating Systems | Windows and Linux |
 
-> The **text-only simulator does not require curses**. The **interactive screen does**. No third-party JSON parser is required.
+**Database:** None. Active simulation data is maintained in memory.
 
-## 🚀 Installation and Running
+---
 
-### 1. Clone the repository
+## 🏗️ System Architecture
+
+```text
+                JSON Layout
+                     |
+                     v
+             JSON Parser / Loader
+                     |
+                     v
+              Parking Graph
+                     |
+                     v
+              Simulation Engine
+                     |
+        +------------+------------+
+        |            |            |
+        v            v            v
+    Event Queue   Slot Models   Reservations
+        |            |            |
+        +------------+------------+
+                     |
+                     v
+           Slot Selection and A*
+                     |
+                     v
+             Vehicle Movement
+                     |
+                     v
+             Parking / Departure
+                     |
+            +--------+--------+
+            |                 |
+            v                 v
+       Live Terminal      Metrics / Tickets
+            UI                 |
+                               v
+                          CSV Export
+                       (Console Mode)
+```
+
+The simulation engine and visualizer are separated.
+
+The visualizer reads simulation snapshots, allowing the core engine to run without an interactive screen.
+
+---
+
+## 📂 Project Structure
+
+```text
+PBL-parking-allocation/
+|
+|-- main.cpp
+|-- Simulation.cpp
+|-- Simulation.h
+|-- SimView.h
+|
+|-- Event.h
+|-- EventQueue.h
+|
+|-- graph.cpp
+|-- graph.h
+|-- pathfinding.cpp
+|-- pathfinding.h
+|
+|-- intervaltree.cpp
+|-- intervaltree.h
+|
+|-- models/
+|   |-- VehicleHierarchy.cpp
+|   |-- VehicleHierarchy.h
+|   |-- Slot_State.cpp
+|   |-- Slot_State.h
+|   |-- Ticket_Metrics.cpp
+|   |-- Ticket_Metrics.h
+|   |-- Dispatch_Fee.cpp
+|
+|-- metrics/
+|   |-- metrics.cpp
+|
+|-- scenario/
+|   |-- RandomScenario.cpp
+|
+|-- visualization/
+|   |-- JsonParser.cpp
+|   |-- layoutLoader.cpp
+|
+|-- ui/
+|   |-- Visualiser.cpp
+|   |-- Panel.cpp
+|
+|-- layouts/
+|   |-- DemoLayout.json
+|   |-- GridLayout.json
+|
+|-- tests/
+|   |-- test_graph.cpp
+|   |-- test_intervaltree.cpp
+|   |-- test_eventqueue.cpp
+|   |-- test_metrics.cpp
+|   |-- routing_test.cpp
+|   |-- test_simulation.cpp
+|
+|-- README.md
+```
+
+The tree highlights the main source files; other layouts, reports, headers, and tests may also be present.
+
+---
+
+## 🚀 Installation and Execution
+
+### Prerequisites
+
+For Windows:
+
+- MSYS2 UCRT64
+- GCC / G++
+- PDCurses
+- Git
+
+For Linux:
+
+- GCC / G++
+- ncurses development library
+
+### Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/iamaayushbhatt/PBL-parking-allocation.git
+
 cd PBL-parking-allocation
 ```
 
-Run all build commands **from the repository root**, where `main.cpp` and `layouts/` are located.
+### Step 2: Install Dependencies on Windows
 
-### 2. Build the console simulator (Linux / macOS / WSL)
-
-```bash
-g++ -std=c++17 -I. \
-  main.cpp Simulation.cpp scenario/RandomScenario.cpp \
-  graph.cpp pathfinding.cpp intervaltree.cpp \
-  models/Slot_State.cpp models/VehicleHierarchy.cpp models/Ticket_Metrics.cpp \
-  metrics/metrics.cpp visualization/JsonParser.cpp visualization/layoutLoader.cpp \
-  -o parking_sim
-```
-
-On **Windows with MinGW**, use this **one-line command in PowerShell** from the project directory:
-
-```powershell
-g++ -std=c++17 -I. main.cpp Simulation.cpp scenario/RandomScenario.cpp graph.cpp pathfinding.cpp intervaltree.cpp models/Slot_State.cpp models/VehicleHierarchy.cpp models/Ticket_Metrics.cpp metrics/metrics.cpp visualization/JsonParser.cpp visualization/layoutLoader.cpp -o parking_sim.exe
-.\parking_sim.exe
-```
-
-The Linux command uses Bash line continuations (`\`); PowerShell does not interpret them the same way. If `g++` is not recognized, install/configure MinGW-w64 or use Ubuntu in WSL.
-
-### 3. Run one of the console modes
-
-**Demo scenario** (default layout and built-in vehicles):
+Open the **MSYS2 UCRT64** terminal.
 
 ```bash
-./parking_sim
-# Or explicitly:
-./parking_sim layouts/DemoLayout.json
+pacman -S mingw-w64-ucrt-x86_64-gcc
+pacman -S mingw-w64-ucrt-x86_64-make
+pacman -S mingw-w64-ucrt-x86_64-pdcurses
 ```
 
-**Random scenario** (example: 30 vehicles, deterministic seed 42):
+### Step 3: Build the Interactive Simulator on Windows
+
+Run the following command from the repository root:
 
 ```bash
-./parking_sim layouts/DemoLayout.json --random 30 --seed 42
+g++ -std=c++17 -DWITH_UI -DPDC_FORCE_UTF8 \
+-I. -Imodels -I/ucrt64/include/pdcurses \
+main.cpp graph.cpp pathfinding.cpp intervaltree.cpp \
+Simulation.cpp metrics/metrics.cpp \
+models/Dispatch_Fee.cpp models/Slot_State.cpp \
+models/Ticket_Metrics.cpp models/VehicleHierarchy.cpp \
+scenario/RandomScenario.cpp ui/Panel.cpp ui/Visualiser.cpp \
+visualization/JsonParser.cpp visualization/layoutLoader.cpp \
+-o parking_sim.exe -lpdcurses_wincon -lwinmm
 ```
 
-The default seed is `1` if `--seed` is omitted. On Windows, use `./parking_sim.exe` or `.\parking_sim.exe` according to your shell.
+This command uses the PDCurses configuration used for the native Windows UI build.
 
-### 4. Build and run the live terminal screen (Linux / WSL)
+### Step 4: Run the Demo Layout
 
-Install the screen dependency on Ubuntu / Debian / WSL:
+```bash
+./parking_sim.exe layouts/DemoLayout.json --ui
+```
+
+### Step 5: Run the Large Grid Layout
+
+```bash
+./parking_sim.exe layouts/GridLayout.json --ui
+```
+
+The grid layout provides a larger parking network with 69 parking slots.
+
+### Step 6: Run a Random Scenario
+
+```bash
+./parking_sim.exe layouts/DemoLayout.json --random 30 --seed 42
+```
+
+This creates a reproducible random scenario using the specified seed.
+
+---
+
+## 🐧 Linux / WSL Build
+
+Install dependencies:
 
 ```bash
 sudo apt update
 sudo apt install g++ libncurses-dev
 ```
 
-Build with the screen-related source files, `-DWITH_UI`, and the ncurses linker flag:
+Compile the interactive simulator:
 
 ```bash
-g++ -std=c++17 -I. -DWITH_UI \
-  main.cpp Simulation.cpp scenario/RandomScenario.cpp \
-  graph.cpp pathfinding.cpp intervaltree.cpp \
-  models/Slot_State.cpp models/VehicleHierarchy.cpp models/Ticket_Metrics.cpp \
-  metrics/metrics.cpp visualization/JsonParser.cpp visualization/layoutLoader.cpp \
-  ui/Visualiser.cpp ui/Panel.cpp \
-  -lncurses -o parking_ui
+g++ -std=c++17 -DWITH_UI -I. -Imodels \
+main.cpp graph.cpp pathfinding.cpp intervaltree.cpp \
+Simulation.cpp metrics/metrics.cpp \
+models/Dispatch_Fee.cpp models/Slot_State.cpp \
+models/Ticket_Metrics.cpp models/VehicleHierarchy.cpp \
+scenario/RandomScenario.cpp ui/Panel.cpp ui/Visualiser.cpp \
+visualization/JsonParser.cpp visualization/layoutLoader.cpp \
+-o parking_ui -lncurses
 ```
 
-Launch the interactive screen:
+Run:
 
 ```bash
 ./parking_ui layouts/DemoLayout.json --ui
 ```
 
-**Terminal size:** at least **84 columns × 20 rows**. A larger terminal is recommended to see the map and metrics panel comfortably.
+The terminal should be large enough to display both the parking map and statistics panel.
 
-**Windows users:** WSL with Ubuntu is the simplest documented option for the curses-based screen. Native Windows builds require a compatible **PDCurses** installation and linker setup (usually `-lpdcurses` instead of `-lncurses`). Simply compiling `--ui` without `-DWITH_UI` will print a message explaining that screen support was not included.
+---
 
-### 5. Interactive keyboard controls
+## 🎮 Interactive UI Controls
 
 | Key | Action |
-| --- | --- |
-| `S` | Spawn a standard vehicle requiring a standard-size slot |
+|---|---|
+| `S` | Spawn a standard vehicle |
 | `E` | Spawn an electric vehicle |
 | `A` | Spawn an accessible vehicle |
-| `L` | Spawn a large standard vehicle |
-| `C` | Spawn a compact standard vehicle |
+| `L` | Spawn a large vehicle |
+| `C` | Spawn a compact vehicle |
 | `X` | Make the longest-parked vehicle leave |
-| `R` | Toggle generated random traffic and lane closures |
-| `Space` | Pause / resume simulated time |
+| `R` | Toggle random traffic generation |
+| `Space` | Pause or resume simulation |
 | `+` / `=` | Increase simulation speed |
 | `-` / `_` | Decrease simulation speed |
-| `Q` | Quit the screen |
+| `M` | Toggle monochrome display |
+| `Q` | Quit the simulator |
 
-Both uppercase and lowercase letters work. The display has a map area plus a live metrics/event-log panel. Speed choices currently range from **0.5 to 16 simulated minutes per real second**.
+The UI includes a parking map and live metrics/event-log panels.
 
-**Important:** The existing `tickets.csv` export happens in `Simulation::run()` (the completed **console** simulation). Quitting the interactive curses screen does **not currently call that export function**. If you need a CSV report, run demo or random **console** mode.
+**Monochrome mode** changes the appearance of the interface without changing simulation behavior.
 
-### What the interactive screen shows
+---
 
-The terminal UI is drawn in real time by the `ui/` module. It is **not a browser or graphical desktop application**: it uses a text-based lane map, colored symbols, a status bar, and a metrics/log panel.
+## 🖥️ Understanding the Live UI
 
-```text
-+------------------------ PARKING MAP -------------------------+---------------------------+
-| IN -> + ---- + ---- + ---- + ---- + -> OUT                  | METRICS                   |
-|          |      |      |                                   | Arrived / Parked / Exited |
-|          +------+------ +                                  | Turned away / Rerouted    |
-|          o  o   e  ~   o  a   ...                          | Avg. time / CO2 / Revenue |
-|                                                              | LOG                       |
-| o free   e EV   a accessible   ~ reserved   x closed        | Latest vehicle events ... |
-+--------------------------------------------------------------+---------------------------+
- s standard  e EV  a accessible  l large  c compact  |  x exit  r random  space pause  q quit
-```
+### Parking Map
 
-*Illustrative terminal layout only, not a screenshot or verified run.* Actual junction positions, road shapes, counters and labels depend on `layouts/DemoLayout.json`, terminal dimensions, and simulation events.
+Displays the road network, junctions, gates, parking slots, and vehicles.
 
-**Map legend:** `o` = free regular slot, `e` = free EV slot, `a` = free accessible slot, `~` = reserved slot while a car travels, `C/E/A` = parked vehicle category, `=` = highlighted driving route, and `x` = closed lane. Traffic colors indicate lane occupancy when the terminal supports colors.
+### LOT Panel
 
+Displays parking capacity, occupied slots, and occupancy percentage.
 
-## 🧠 How the Simulator Works
+### TRAFFIC Panel
 
-```text
-Read JSON lot layout
-         |
-         v
-Create road graph, parking slots, reservations and event queue
-         |
-         v
-Vehicle arrives -> identify vehicle category and size
-         |
-         v
-Filter slots: free? big enough? correct EV/accessibility zone?
-              booking window does not overlap?
-         |
-         v
-Run A* from entry to each reachable, eligible slot
-         |
-         v
-Choose slot with minimum congestion-weighted route cost
-         |
-         +------ No matching reachable slot --> Turn vehicle away
-         |
-         v
-Reserve the chosen slot while the car travels
-         |
-         v
-Process PARKED event -> mark slot occupied, update metrics
-         |
-         v
-Process EXIT event -> free slot, calculate fee, record ticket
-         |
-         v
-Console mode: print report and write tickets.csv
-```
+Displays arrivals, parked vehicles, exits, moving vehicles, reroutes, and turn-aways.
 
-### Routing and lane closures
+### RESULTS Panel
 
-A parking layout is represented as a graph: **nodes** are road junctions, **edges** are drivable lanes, and parking slots attach to nodes. The graph uses dynamic costs influenced by congestion (lane occupancy relative to capacity). Closed lanes are excluded from routing.
+Displays average parking time, average stay, estimated CO₂ emissions, estimated CO₂ savings, and revenue.
 
-For each arriving vehicle, the simulator checks eligible slots, runs A* to find a route, and chooses the slot with the lowest route cost. The A* heuristic uses junction coordinates. **Dijkstra** is also implemented and covered by routing tests.
+### LOG Panel
 
-When a lane is already closed at the time of a **new arrival**, the chosen route can detour around it. The `rerouted` metric compares that route with the route obtained if closed lanes had been open. **This is not yet a continuous mid-journey replan for vehicles already in transit.**
+Displays time-stamped simulation events.
 
-### Reservations
-
-The interval-tree module stores reservation time ranges and checks for overlapping bookings. The simulated allocation step avoids slots reserved by another vehicle for the requested stay window. Reservation logic is implemented, but the current keyboard screen does **not** provide a form to create arbitrary user-entered bookings.
-
-### Fee calculation
-
-When a vehicle leaves, the simulator creates a `ParkingTicket` with its ID, registration, slot, floor, arrival/departure times, stay duration, and fee.
-
-The **current provisional simulation fee rule** (implemented in `Simulation.cpp`) is. A source comment marks this helper for replacement when the separate fee calculator is integrated:
-
-| Vehicle size | Base fee per started hour |
-| --- | ---: |
-| Compact | 20 |
-| Standard | 30 |
-| Large | 50 |
-
-Electric vehicles add **10 per started hour**. Duration is rounded up to a full hour with a one-hour minimum. These are **simulated fee amounts**, not payment-gateway transactions; the current admin console labels revenue with `$`.
-
-## 📊 Console Output and CSV Reports
-
-Console runs print time-stamped activity logs, a metrics report, counts of **turned-away** and **rerouted** vehicles, and an **admin dashboard** with revenue, processed tickets, and final occupancy. A typical event log follows this format (placeholders below are not actual measured output):
+Example:
 
 ```text
-[t=  0.0] V1 (Standard, STANDARD) arrives
-[t=  0.0]   -> slot <id>, route <node1>-><node2>->... (<distance> units, baseline <distance>)
-[t= <time>] V1 parked in slot <id>  (occupancy <percentage>%)
-[t= <time>] V1 leaves slot <id> after <minutes> min, fee <amount>
+[t=694.0] R31 (Standard, LARGE) arrives
+[t=694.0] -> slot 27, route 0->14->10->6
+[t=708.5] R31 parked in slot 27
 ```
 
-The CSV file is created in the directory where you launch the simulator:
+The event log helps users understand how vehicles are allocated and routed.
+
+---
+
+## 🧠 Algorithms and Data Structures
+
+### Weighted Graph
+
+The graph stores parking lanes and junctions.
+
+Each edge can contain distance, capacity, vehicle count, and closure information.
+
+### Dijkstra's Algorithm
+
+Finds minimum-cost paths using nonnegative edge weights.
+
+A priority-queue implementation typically runs in:
+
+```text
+O((V + E) log V)
+```
+
+### A* Algorithm
+
+Uses:
+
+```text
+f(n) = g(n) + h(n)
+```
+
+Where:
+
+- `g(n)` is the accumulated path cost.
+- `h(n)` is the heuristic estimate.
+- `f(n)` is the estimated total cost.
+
+The project uses a Manhattan-distance-based heuristic.
+
+### Min-Heap Event Queue
+
+Schedules simulation events by time.
+
+This avoids repeatedly scanning all scheduled events to find the next event.
+
+### AVL-Balanced Interval Tree
+
+Stores reservation intervals and helps detect conflicting bookings.
+
+AVL rotations keep the tree balanced.
+
+---
+
+## 💾 JSON Input and CSV Output
+
+### JSON
+
+JSON files describe the parking facility.
+
+They contain information about:
+
+- Junctions.
+- Roads and lane distances.
+- Lane capacities.
+- Parking slots.
+- Slot types.
+- Entry and exit gates.
+
+### CSV
+
+Completed console simulations export ticket records to:
 
 ```text
 tickets.csv
 ```
 
-Its header is:
+Example header:
 
 ```csv
 TicketID,VehicleID,LicensePlate,SlotID,Floor,ArrivalTime,DepartureTime,Duration,TotalFee
 ```
 
-One row is written per **completed vehicle exit**. The file is rewritten on each completed console simulation run; it is not a persistent database of every previous run. Values are in simulated minutes and simulated fee units.
-
-## 🗂️ Project Structure
-
-```text
-PBL-parking-allocation/
-├── main.cpp                    # CLI flags and selection of run mode
-├── Simulation.h / .cpp         # Event handlers, allocation, fees, reporting
-├── SimView.h                   # View/snapshot structures for the UI
-├── Event.h / EventQueue.h      # Event definitions and priority queue
-├── graph.h / .cpp              # Graph, lane occupancy and closure state
-├── pathfinding.h / .cpp       # Dijkstra, A* and route calculations
-├── intervaltree.h / .cpp      # Non-overlapping reservation windows
-├── models/
-│   ├── VehicleHierarchy.*     # Standard, electric, accessible vehicles
-│   ├── Slot_State.*           # Parking slot information and state
-│   └── Ticket_Metrics.*       # Tickets, admin revenue and CSV export
-├── metrics/                    # Parking duration/time and CO2 estimates
-├── scenario/                   # Seeded random vehicle/closure generation
-├── visualization/              # JSON parser and layout loader
-├── ui/
-│   ├── Visualiser.*           # Terminal map and screen runtime
-│   └── Panel.*                # Metrics panel and keyboard interactions
-├── layouts/
-│   └── DemoLayout.json        # Example parking facility layout
-├── tests/                      # Unit and algorithm tests
-├── report/                     # Academic phase reports
-└── README.md
-```
-
-## 🗺️ Custom Layout Files
-
-The simulator accepts a JSON layout file as its first path argument. The supplied `layouts/DemoLayout.json` is the recommended starting point.
-
-| JSON key | What it represents |
-| --- | --- |
-| `nodes` | Junction IDs and their `x`, `y` coordinates |
-| `lanes` | `from`, `to`, `distance`, `capacity`, and optional `twoWay` |
-| `slots` | `id`, `node`, `floor`, `size`; optional `ev`, `accessible` |
-| `entries` | Entry gate node IDs |
-| `exits` | Exit gate node IDs |
-
-Slot sizes are `COMPACT`, `STANDARD`, and `LARGE`. The custom parser validates the layout and reports invalid input. For layouts other than the bundled demo, **random** or **interactive** mode is generally a better starting point than the hard-coded demo schedule.
-
-## ✅ Running Tests
-
-From the repository root, build and run the existing assert-based tests:
-
-```bash
-g++ -std=c++17 -I. tests/test_graph.cpp graph.cpp -o t_graph && ./t_graph
-g++ -std=c++17 -I. tests/test_intervaltree.cpp intervaltree.cpp -o t_interval && ./t_interval
-g++ -std=c++17 -I. tests/test_eventqueue.cpp -o t_events && ./t_events
-g++ -std=c++17 -I. tests/test_metrics.cpp metrics/metrics.cpp -o t_metrics && ./t_metrics
-g++ -std=c++17 -I. tests/routing_test.cpp graph.cpp pathfinding.cpp -o t_routing && ./t_routing
-```
-
-Routing tests cover normal traffic, congestion, closed lanes, and an unreachable destination. Tests and UI functionality should be rerun on your own development machine after every integration change.
-
-## 📌 Current Progress and Scope
-
-| Area | Current code |
-| --- | --- |
-| Graph with congestion weights and lane closures | Implemented |
-| Dijkstra and A* routing | Implemented |
-| Interval-tree reservation checks | Implemented |
-| Event-driven vehicle lifecycle | Implemented |
-| Vehicle hierarchy and slot states | Implemented |
-| JSON layout parsing and validation | Implemented |
-| Fixed demo scenario | Implemented |
-| Seeded random vehicles and closures | Implemented |
-| Live curses-based terminal visualization | Implemented (optional build) |
-| Ticket generation and admin revenue | Implemented |
-| Console-mode ticket CSV export | Implemented |
-| Full UI-based booking input | Not part of the current keyboard controls |
-| Continuous rerouting of already-moving vehicles | Not implemented in the current event handler |
-| Automatic ticket export when quitting UI | Not currently called by the UI entry point |
-
-## 🔭 Possible Improvements
-
-- Add a booking form or command for user-selected reservation slots and windows.
-- Recalculate routes for cars already driving when a lane unexpectedly closes.
-- Add export/report options directly inside the interactive UI.
-- Add persistent storage (SQLite or another database) for tickets across runs.
-- Add automated integration tests and a build script or CMake configuration.
-- Replace simulated fee units with a configurable currency, rates, and tax rules.
-
-## 📎 Repository
-
-[GitHub — iamaayushbhatt/PBL-parking-allocation](https://github.com/iamaayushbhatt/PBL-parking-allocation)
+**Important:** The current interactive UI does not automatically export `tickets.csv` when the user quits. Use a completed console-mode simulation for CSV output.
 
 ---
 
-**Academic project:** The Canvas · DSCPP-III-2026-T062
+## 🧪 Testing and Validation
+
+The project contains tests for its core modules.
+
+### Graph Test
+
+```bash
+g++ -std=c++17 -I. tests/test_graph.cpp graph.cpp -o t_graph
+./t_graph
+```
+
+### Interval Tree Test
+
+```bash
+g++ -std=c++17 -I. tests/test_intervaltree.cpp intervaltree.cpp -o t_interval
+./t_interval
+```
+
+### Event Queue Test
+
+```bash
+g++ -std=c++17 -I. tests/test_eventqueue.cpp -o t_events
+./t_events
+```
+
+### Metrics Test
+
+```bash
+g++ -std=c++17 -I. tests/test_metrics.cpp metrics/metrics.cpp -o t_metrics
+./t_metrics
+```
+
+### Routing Test
+
+```bash
+g++ -std=c++17 -I. tests/routing_test.cpp graph.cpp pathfinding.cpp -o t_routing
+./t_routing
+```
+
+Routing test scenarios include:
+
+1. Normal traffic.
+2. Congested lanes.
+3. Closed lanes.
+4. Unreachable destinations.
+
+Tests should be rerun after changes to the source code.
+
+---
+
+## 📊 Performance and Results
+
+The following results were reported in the project's evaluation presentation.
+
+### Demo Scenario
+
+| Metric | Result |
+|---|---:|
+| Total arrivals | 13 |
+| Successfully parked | 11 |
+| Turned away | 2 |
+| Rerouted | 5 |
+| Average time to park | 7.5 minutes |
+| Average parking duration | 37.7 minutes |
+| Estimated CO₂ emitted | 15.9 g |
+| Estimated CO₂ saved | 2.7 g |
+| Simulated revenue | 875.40 |
+
+### Grid Scenario
+
+**Configuration:** 80 vehicles, seed 5.
+
+| Metric | Result |
+|---|---:|
+| Total arrivals | 80 |
+| Successfully parked | 66 |
+| Turned away | 14 |
+| Estimated CO₂ emitted | 179.2 g |
+| Estimated CO₂ saved | 139.6 g |
+| Simulated revenue | 8737.35 |
+
+These figures are scenario-specific simulation results and are not live measurements.
+
+Actual results depend on the selected layout, traffic generation, random seed, and implementation version.
+
+---
+
+## 📈 Current Implementation Status
+
+| Module | Status |
+|---|---|
+| Weighted graph | Implemented |
+| Dijkstra's algorithm | Implemented |
+| A* pathfinding | Implemented |
+| Congestion-aware routing | Implemented |
+| Lane closures | Implemented |
+| AVL interval tree | Implemented |
+| Event queue | Implemented |
+| Vehicle and slot models | Implemented |
+| JSON layout loader | Implemented |
+| Random traffic scenarios | Implemented |
+| Interactive terminal UI | Implemented |
+| Parking tickets and metrics | Implemented |
+| Console CSV export | Implemented |
+
+### Known Limitations
+
+- The current engine uses a single entry gate.
+- The simulator uses modeled data rather than live sensors.
+- Interactive manual reservation entry is not available.
+- Vehicles already moving are not continuously replanned after a lane closure.
+- Quitting the interactive UI does not automatically export ticket CSV data.
+- Terminal dimensions and PDCurses compatibility can affect the display.
+
+---
+
+## 🔮 Future Scope
+
+Potential improvements include:
+
+- Multiple entry and exit gates.
+- Multi-floor parking facilities.
+- Live parking sensor integration.
+- Interactive reservation booking.
+- Immediate rerouting for moving vehicles.
+- Automatic UI-mode CSV export.
+- Persistent database storage.
+- A graphical desktop or web interface.
+- More advanced traffic prediction.
+- Configurable parking fees and reporting.
+
+---
+
+## 🎓 Academic Concepts Demonstrated
+
+### Data Structures
+
+- Graphs and adjacency lists.
+- Priority queues and binary heaps.
+- AVL trees and interval trees.
+- Maps and sets.
+
+### Algorithms
+
+- Dijkstra's shortest-path algorithm.
+- A* pathfinding.
+- Congestion-aware route selection.
+- Reservation-overlap checking.
+- Event scheduling.
+
+### Object-Oriented Programming
+
+- Classes and objects.
+- Encapsulation.
+- Inheritance.
+- Polymorphism.
+- Constructors.
+- Smart pointers.
+- STL containers.
+
+---
+
+## 🔗 GitHub Repository
+
+**Repository:**  
+https://github.com/iamaayushbhatt/PBL-parking-allocation
+
+---
+
+## 🏁 Conclusion
+
+The Multi-Lane Parking Allocation and Rerouting Simulator demonstrates how data structures, graph algorithms, object-oriented programming, and event-driven simulation can work together in a practical software project.
+
+It supports intelligent slot allocation, congestion-aware routing, reservation checking, vehicle movement, parking management, and performance analysis.
+
+The interactive terminal interface makes these algorithms observable through a working parking simulation.
+
+---
+
+**Developed by Team The Canvas**  
+**Graphic Era (Deemed to be University), Dehradun**
