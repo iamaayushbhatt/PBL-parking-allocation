@@ -117,6 +117,7 @@ void Simulation::processNext()
     case VEHICLE_ARRIVAL: onArrival(e); break;
     case VEHICLE_PARKED:  onParked(e); break;
     case VEHICLE_EXIT:    onExit(e); break;
+    case VEHICLE_LEFT:    onLeft(e); break;
     case LANE_BLOCKED:    onLane(e, true); break;
     case LANE_OPENED:     onLane(e, false); break;
     }
@@ -302,6 +303,13 @@ SimSnapshot Simulation::snapshot() const
         const Vehicle &v = *vehicles.at(entry.first);
         pair<double, double> p = positionOnRoute(t.route, (now - t.start) * SPEED);
         s.cars.push_back({v.getVehicleId(), v.getVehicleCategory(), v.getSize(), false, p.first, p.second, t.slotId, t.route});
+    }
+    for (const auto &entry : leavingTransit) // driving out to the exit gate
+    {
+        const Transit &t = entry.second;
+        const Vehicle &v = *vehicles.at(entry.first);
+        pair<double, double> p = positionOnRoute(t.route, (now - t.start) * SPEED);
+        s.cars.push_back({v.getVehicleId(), v.getVehicleCategory(), v.getSize(), false, p.first, p.second, -1, t.route});
     }
     for (const auto &entry : parkedNow) // parked
     {
@@ -490,14 +498,32 @@ void Simulation::onExit(const Event &e)
 
     int arrivalPark = parkedAt[v.getVehicleId()];
     int minutes = (int)e.timestamp - arrivalPark;
-ParkingTicket ticket = FeeCalculator::generateTicket(
-    "T" + to_string(++tickets),&v,slot,(int)e.timestamp
-);
-double fee = ticket.getFee();
-admin.recordTicket(ticket);
+    ParkingTicket ticket = FeeCalculator::generateTicket("T" + to_string(++tickets), &v, slot, (int)e.timestamp);
+    double fee = ticket.getFee();
+    admin.recordTicket(ticket);
     stamp(e.timestamp);
     out << v.getVehicleId() << " leaves slot " << slot->getId() << " after " << minutes
         << " min, fee " << fixed << setprecision(2) << fee << "\n";
+
+    // drive from the slot to the exit gate (shortest open route); if every way out is closed
+    // the car simply disappears from the map
+    vector<int> way = Pathfinding::aStar(*layout.graph, slotNode.at(slot->getId()), layout.exits[0]);
+    if (way.size() < 2)
+        return;
+    changeLoad(way, +1);
+    leavingTransit[v.getVehicleId()] = {way, -1, e.timestamp};
+    queue.pushEvent({e.timestamp + layout.graph->pathDistance(way) / SPEED, VEHICLE_LEFT, v.getVehicleId()});
+}
+
+void Simulation::onLeft(const Event &e)
+{
+    auto it = leavingTransit.find(e.vehicleId);
+    if (it == leavingTransit.end())
+        return;
+    changeLoad(it->second.route, -1);
+    leavingTransit.erase(it);
+    stamp(e.timestamp);
+    out << e.vehicleId << " drives out through the exit gate\n";
 }
 
 void Simulation::report()

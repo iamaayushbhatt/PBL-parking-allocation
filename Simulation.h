@@ -76,7 +76,8 @@ private:
     std::map<int, int> slotNode;                          // slotId -> graph node
     std::map<std::string, std::unique_ptr<Vehicle>> vehicles;
     std::map<std::string, DemoVehicle> demo;              // vehicleId -> its plan (stay etc.)
-    std::map<std::string, Transit> inTransit;             // vehicles currently driving
+    std::map<std::string, Transit> inTransit;             // vehicles currently driving to a slot
+    std::map<std::string, Transit> leavingTransit;        // vehicles driving from their slot to the exit
     std::map<std::string, int> parkedAt;                  // vehicleId -> park time
     std::map<std::string, int> parkedNow;                 // vehicles parked right now -> slotId
     std::set<std::string> leaving;                        // exit requested, not processed yet
@@ -112,6 +113,7 @@ private:
     void onArrival(const Event &e);
     void onParked(const Event &e);
     void onExit(const Event &e);
+    void onLeft(const Event &e);
     void report();
 };
 
