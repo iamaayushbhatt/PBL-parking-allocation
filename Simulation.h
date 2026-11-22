@@ -28,9 +28,9 @@ class Simulation
 public:
     enum class Mode
     {
-        Demo,        // the fixed 13-vehicle scenario
-        Random,      // vehicleCount random vehicles, generated from seed
-        Interactive  // starts empty; the caller adds vehicles while it runs
+        Demo,       // the fixed 13-vehicle scenario
+        Random,     // vehicleCount random vehicles, generated from seed
+        Interactive // starts empty; the caller adds vehicles while it runs
     };
 
     Simulation(const std::string &layoutPath, Mode mode = Mode::Demo,
@@ -41,14 +41,15 @@ public:
 
     // ---- interactive mode
     std::string layoutName() const { return layout.name; }
-    std::vector<NodeView> nodes() const;    // junctions with coordinates and gate flags, never change
-    void advanceTo(double minute);          // process every event up to this minute
+    std::vector<NodeView> nodes() const;                                            // junctions with coordinates and gate flags, never change
+    void advanceTo(double minute);                                                  // process every event up to this minute
     std::string spawnVehicle(const std::string &category, const std::string &size); // arrives now; returns its id
-    bool exitLongestParked();               // false if nobody is parked
+    bool exitLongestParked();                                                       // false if nobody is parked
     void setRandomTraffic(bool on, unsigned seed);
     SimSnapshot snapshot() const;
-    std::vector<std::string> takeLog();     // log lines since the last call
+    std::vector<std::string> takeLog(); // log lines since the last call
     double time() const { return now; }
+    void saveTickets() { admin.exportTicketsToCSV("tickets.csv"); } // write tickets.csv (the screen calls this on quit)
 
 private:
     struct Transit
@@ -73,17 +74,17 @@ private:
     double now = 0;
 
     std::vector<std::unique_ptr<ParkingSlot>> slots;
-    std::map<int, int> slotNode;                          // slotId -> graph node
+    std::map<int, int> slotNode; // slotId -> graph node
     std::map<std::string, std::unique_ptr<Vehicle>> vehicles;
-    std::map<std::string, DemoVehicle> demo;              // vehicleId -> its plan (stay etc.)
-    std::map<std::string, Transit> inTransit;             // vehicles currently driving to a slot
-    std::map<std::string, Transit> leavingTransit;        // vehicles driving from their slot to the exit
-    std::map<std::string, int> parkedAt;                  // vehicleId -> park time
-    std::map<std::string, int> parkedNow;                 // vehicles parked right now -> slotId
-    std::set<std::string> leaving;                        // exit requested, not processed yet
-    std::map<int, std::unique_ptr<IntervalTree>> bookings;  // slotId -> reserved windows
-    std::map<int, Reservation> reservations;              // slotId -> who holds it
-    std::set<std::pair<int, int>> closed;                 // closed lanes (u < v)
+    std::map<std::string, DemoVehicle> demo;               // vehicleId -> its plan (stay etc.)
+    std::map<std::string, Transit> inTransit;              // vehicles currently driving to a slot
+    std::map<std::string, Transit> leavingTransit;         // vehicles driving from their slot to the exit
+    std::map<std::string, int> parkedAt;                   // vehicleId -> park time
+    std::map<std::string, int> parkedNow;                  // vehicles parked right now -> slotId
+    std::set<std::string> leaving;                         // exit requested, not processed yet
+    std::map<int, std::unique_ptr<IntervalTree>> bookings; // slotId -> reserved windows
+    std::map<int, Reservation> reservations;               // slotId -> who holds it
+    std::set<std::pair<int, int>> closed;                  // closed lanes (u < v)
     std::map<std::string, double> parkedBaseline, parkedDistance;
     int tickets = 0, turnedAway = 0, detours = 0;
 
