@@ -45,7 +45,9 @@ int main(int argc, char **argv)
         {
 #ifdef WITH_UI
             Simulation sim(path, Simulation::Mode::Interactive);
-            return runVisualiser(sim);
+            int code = runVisualiser(sim);
+            sim.saveTickets(); // the screen never ends on its own, so save the tickets when it closes
+            return code;
 #else
             cerr << "This build has no screen. Rebuild with -DWITH_UI (see the top of main.cpp).\n";
             return 1;
